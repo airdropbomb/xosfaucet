@@ -1,5 +1,23 @@
 from seleniumbase import Driver
 import random, time
+from colorama import Fore, Style  # Import colorama for colored output
+
+# Welcome message function
+def welcome():
+    print(
+        f"""
+        {Fore.GREEN + Style.BRIGHT}       █████╗ ██████╗ ██████╗     ███╗   ██╗ ██████╗ ██████╗ ███████╗
+        {Fore.GREEN + Style.BRIGHT}      ██╔══██╗██╔══██╗██╔══██╗    ████╗  ██║██╔═══██╗██╔══██╗██╔════╝
+        {Fore.GREEN + Style.BRIGHT}      ███████║██║  ██║██████╔╝    ██╔██╗ ██║██║   ██║██║  ██║█████╗  
+        {Fore.GREEN + Style.BRIGHT}      ██╔══██║██║  ██║██╔══██╗    ██║╚██╗██║██║   ██║██║  ██║██╔══╝  
+        {Fore.GREEN + Style.BRIGHT}      ██║  ██║██████╔╝██████╔╝    ██║ ╚████║╚██████╔╝██████╔╝███████╗
+        {Fore.GREEN + Style.BRIGHT}      ╚═╝  ╚═╝╚═════╝ ╚═════╝     ╚═╝  ╚═══╝ ╚═════╝ ╚═════╝ ╚══════╝
+        {Fore.YELLOW + Style.BRIGHT}      Modified by ADB NODE
+        """
+    )
+
+# Call the welcome message at the start
+welcome()
 
 with open("wallets.txt", "r") as file:
     wallets = [line.strip() for line in file if line.strip()]
@@ -55,7 +73,7 @@ for i, address in enumerate(wallets, start=1):
                             break
                         else:
                             print("⏳ The Claim Button Isn't Active Yet, Please Wait...")
-                            time.sleep(1)
+                            time.sleep(1Caffè
                     else:
                         print("❌ Claim Button Is Inactive After Waiting For a While, Skipping This Wallet")
                     break
