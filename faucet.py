@@ -73,7 +73,7 @@ for i, address in enumerate(wallets, start=1):
                             break
                         else:
                             print("⏳ The Claim Button Isn't Active Yet, Please Wait...")
-                            time.sleep(1Caffè
+                            time.sleep(1)
                     else:
                         print("❌ Claim Button Is Inactive After Waiting For a While, Skipping This Wallet")
                     break
@@ -88,3 +88,4 @@ for i, address in enumerate(wallets, start=1):
 
     print(f"\n⏸️ Wait For {delay} Seconds Before Proceeding To The Next Account...")
     time.sleep(delay)
+
