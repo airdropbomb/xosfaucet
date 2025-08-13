@@ -1,10 +1,10 @@
 from seleniumbase import Driver
 import random, time, re
 from colorama import Fore, Style
-from twocaptcha import TwoCaptcha  # pip install 2captcha-python နဲ့ ထည့်ပါ
+from twocaptcha import TwoCaptcha  # pip install 2captcha-python
 
 # Your 2CAPTCHA API key (replace with your own)
-API_KEY = 'YOUR_2CAPTCHA_API_KEY_HERE'  # သင့် API key ထည့်ပါ
+API_KEY = 'YOUR_2CAPTCHA_API_KEY_HERE'  # Replace with your 2CAPTCHA API key
 
 # Welcome message function
 def welcome():
@@ -41,13 +41,16 @@ with open("wallets.txt", "r") as file:
 # 2CAPTCHA solver function for Turnstile
 def solve_turnstile(driver, api_key):
     solver = TwoCaptcha(api_key)
-    site_key = driver.execute_script("return document.querySelector('.cf-turnstile')?.getAttribute('data-sitekey') or ''")
-    if not site_key:
-        print("❌ No Turnstile sitekey found on the page. Proceeding without solving.")
-        return None
-    
-    url = driver.current_url
     try:
+        # Wait briefly for the page to load
+        driver.sleep(2)
+        # Use safer JavaScript syntax
+        site_key = driver.execute_script("var el = document.querySelector('.cf-turnstile'); return el ? el.getAttribute('data-sitekey') : '';")
+        if not site_key:
+            print("❌ No Turnstile sitekey found on the page. Proceeding without solving.")
+            return None
+        
+        url = driver.current_url
         result = solver.turnstile(sitekey=site_key, url=url)
         token = result['code']
         print("🔓 Turnstile solved successfully via 2CAPTCHA.")
@@ -66,7 +69,7 @@ while True:  # Infinite loop to keep retrying
                 print("🌐 Opening XOS Faucet Web (https://faucet.x.ink/)...")
                 driver.get("https://faucet.x.ink/")
                 
-                # Solve Turnstile right after loading the page (between Opening and Waiting)
+                # Solve Turnstile right after loading the page
                 print("🧩 Checking and Solving Turnstile if present...")
                 solve_turnstile(driver, API_KEY)
                 
