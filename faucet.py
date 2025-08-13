@@ -43,7 +43,7 @@ def solve_turnstile(driver, api_key):
     solver = TwoCaptcha(api_key)
     site_key = driver.execute_script("return document.querySelector('.cf-turnstile')?.getAttribute('data-sitekey') or ''")
     if not site_key:
-        print("❌ No Turnstile sitekey found on the page.")
+        print("❌ No Turnstile sitekey found on the page. Proceeding without solving.")
         return None
     
     url = driver.current_url
@@ -65,7 +65,12 @@ while True:  # Infinite loop to keep retrying
                 print(f"\n\n🧾 Wallet-{i}: {address}")
                 print("🌐 Opening XOS Faucet Web (https://faucet.x.ink/)...")
                 driver.get("https://faucet.x.ink/")
-                driver.sleep(5)
+                
+                # Solve Turnstile right after loading the page (between Opening and Waiting)
+                print("🧩 Checking and Solving Turnstile if present...")
+                solve_turnstile(driver, API_KEY)
+                
+                driver.sleep(5)  # Wait for page to fully load after solving
 
                 print("🔎 Waiting Until The Input Address Appears....")
                 driver.wait_for_element('div.address-input input', timeout=120)
