@@ -1,6 +1,10 @@
 from seleniumbase import Driver
 import random, time, re
 from colorama import Fore, Style
+from twocaptcha import TwoCaptcha  # pip install 2captcha-python နဲ့ ထည့်ပါ
+
+# Your 2CAPTCHA API key (replace with your own)
+API_KEY = 'YOUR_2CAPTCHA_API_KEY_HERE'  # သင့် API key ထည့်ပါ
 
 # Welcome message function
 def welcome():
@@ -33,6 +37,26 @@ def parse_wait_time(text):
 # Read wallets from file
 with open("wallets.txt", "r") as file:
     wallets = [line.strip() for line in file if line.strip()]
+
+# 2CAPTCHA solver function for Turnstile
+def solve_turnstile(driver, api_key):
+    solver = TwoCaptcha(api_key)
+    site_key = driver.execute_script("return document.querySelector('.cf-turnstile')?.getAttribute('data-sitekey') or ''")
+    if not site_key:
+        print("❌ No Turnstile sitekey found on the page.")
+        return None
+    
+    url = driver.current_url
+    try:
+        result = solver.turnstile(sitekey=site_key, url=url)
+        token = result['code']
+        print("🔓 Turnstile solved successfully via 2CAPTCHA.")
+        # Inject the token into the input field
+        driver.execute_script(f'document.querySelector("input[name=\'cf-turnstile-response\']").value = "{token}";')
+        return token
+    except Exception as e:
+        print(f"❌ Error solving Turnstile: {str(e)}")
+        return None
 
 while True:  # Infinite loop to keep retrying
     for i, address in enumerate(wallets, start=1):
@@ -76,6 +100,11 @@ while True:  # Infinite loop to keep retrying
                                     break
                             except:
                                 pass
+                            # If token not found or short, try to solve with 2CAPTCHA
+                            print("🧩 Attempting to solve Turnstile with 2CAPTCHA...")
+                            token = solve_turnstile(driver, API_KEY)
+                            if token and len(token) > 50:
+                                break
                             time.sleep(0.5)
                         else:
                             print("❌ Turnstile Not Completed, Skipping This Wallet.")
